@@ -12,8 +12,11 @@
   border: solid 1px black;
   border-collapse: collapse;
 }
+td.ctrl, td.ext{
+  text-align: center;
+}
 
-.mono{
+.result{
   font-family: monospace;
 }
 
@@ -31,4 +34,7 @@
 }
 .ext{
   color: purple;
+}
+.highlight{
+  background-color: #eee;
 }

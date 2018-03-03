@@ -35,47 +35,99 @@ document.addEventListener("DOMContentLoaded", function(event){
     var final = ""
 
     for(var i = 0; i < XORed.length; i++){
-      var code = XORed.charCodeAt(i)
-      if (code < 32){
-        final += "<span class=\"ctrl\">.</span>"
-      }
-      else if (code < 64){
-        final += "<span class=\"num\">" + XORed.charAt(i) + "</span>"
-      }
-      else if (code < 96){
-        final += "<span class=\"upper\">" + XORed.charAt(i) + "</span>"
-      }
-      else if (code < 128){
-        final += "<span class=\"lower\">" + XORed.charAt(i) + "</span>"
-      }
-      else {
-        final += "<span class=\"ext\">" + XORed.charAt(i) + "</span>"
-      }
+      final += decorate(XORed.charAt(i), true)
+        final += decorate(XORed.charAt(++i), false)
     }
 
     document.getElementById("result-p").innerHTML = final
   }
 
   /**
-   * Computes the bitwise XOR of the two strings given. If the strings are of unequal length, the longer is truncated.
+   * Decorates a character with an HTML span based on its ascii code and
+   * whether the caller requests it be highlighted.
+   * @param char The character to be annotated
+   * @param highlight Whether the character should be highlighted
+   * @return A string like <span class="num highlight">5</span>
+   */
+  function decorate(char, highlight){
+    var classes
+    var renderChar = char
+    var code = char.charCodeAt(0)
+
+    // Determine the right class for each character
+    if (code < 32){
+      classes = "ctrl"
+      renderChar = "." // because control chars are non-printing
+    }
+    else if (code < 64){
+      classes = "num"
+    }
+    else if (code < 96){
+      classes = "upper"
+    }
+    else if (code < 128){
+      classes = "lower"
+    }
+    else {
+      classes = "ext"
+    }
+
+    // Highlight if necessary
+    if (highlight){
+      classes += " highlight"
+    }
+
+    return '<span class="' + classes + '">' + renderChar + '</span>'
+
+  }
+
+  /**
+   * Computes the bitwise XOR of the two strings given. If the strings are of unequal length, the
+   * shorter string is right-padded with nulls. That is, the end of the longer string remains
+   * unchanged.
    * @param s1 The first string to be XORed
    * @param s2 The second string to be XORed
    * @return The ascii encoded XOR of the two strings
    */
   function xorString(s1, s2){
-    // Slice the longer string down to the shorter length
-    if (s1.length > s2.length){
-      s1 = s1.slice(0, s2.length)
-    }
-    else{
-      s2 = s2.slice(0, s1.length)
-    }
+    // Determine which string is shorter
+    var shorter = s1.length < s2.length ? s1 : s2
+    var longer  = s1.length < s2.length ? s2 : s1
 
-    // Now XOR character by character
+    // Iterate XORing char-wise
     var answer = ""
-    for (var i = 0; i < s1.length; i++){
-      answer += String.fromCharCode(s1.charCodeAt(i) ^ s2.charCodeAt(i))
+    for (var i = 0; i < longer.length; i++){
+      if (i < shorter.length){
+        answer += String.fromCharCode(s1.charCodeAt(i) ^ s2.charCodeAt(i))
+      }
+      else{
+        answer += longer.charAt(i)
+      }
     }
+    return answer
+  }
+
+  /**
+   * Computes the XOR or a text with a crib at the specified index. If the index is such that
+   * the crib is partly or fully beyond the end of the text, the overhanging part of the crib
+   * is not used.
+   * @param text The text over which the crib is being dragged
+   * @param crib The crib to XOR with the specified part of the text
+   * @param start The index where the crib should be aligned with the text
+   * @return The original text altered only at the characters that align with the crib
+   */
+  function xorCrib(text, crib, start){
+
+    // Grab initial uncribbed part
+    var answer = text.slice(0, start)
+
+    // Do the actual XORing
+    var aligned = text.slice(start, start + crib.length)
+    crib = crib.slice(0, aligned.length)
+    answer += xorString(aligned, crib)
+
+    // Grab final uncribbed part
+    answer += text.slice(start + crib.length)
     return answer
 
   }
