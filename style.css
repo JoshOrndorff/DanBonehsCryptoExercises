@@ -1,8 +1,34 @@
+#grid{
+  max-width: 800px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: minmax(200px, auto);
+  grid-gap: 1em;
 
-body{
-  background-color:pink;
 }
 
 #ascii-table{
   font-family: monospace;
+  border: solid 1px black;
+  border-collapse: collapse;
+}
+
+.mono{
+  font-family: monospace;
+}
+
+.ctrl{
+  color: red;
+}
+.num{
+  color: orange;
+}
+.upper{
+  color: green;
+}
+.lower{
+  color: blue;
+}
+.ext{
+  color: purple;
 }

@@ -4,42 +4,63 @@
     <meta content="text/html;charset=utf-8"
           http-equiv="Content-Type" />
     <title>XOR Strings</title>
-    <link rel="stylesheet" type="text/css" src="style.css"></link>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
     <script type="text/javascript" src="crypto.js"></script>
   </head>
 
   <body>
-    <textarea id="c1" cols="80" rows="20" placeholder="First ciphertext hex encoded."></textarea>
+    <div id="grid">
+      <div class="hex">
+        <h2>First hex text</h2>
+        <textarea id="hex1" cols="80" rows="20" placeholder="Paste hex-encoded text here."></textarea>
+      </div>
+      <div class="ascii">
+        <h2>First ascii text</h2>
+        <textarea id="ascii1" cols="80" rows="20" placeholder="Paste ascii-encoded text here."></textarea>
+      </div>
 
-    <textarea id="c2" cols="80" rows="20" placeholder="Second ciphertext hex encoded."></textarea>
+      <div class="hex">
+        <h2>Second hex text</h2>
+        <textarea id="hex2" cols="80" rows="20" placeholder="Paste hex-encoded text here."></textarea>
+      </div>
+      <div class="ascii">
+        <h2>Second ascii text</h2>
+        <textarea id="ascii2" cols="80" rows="20" placeholder="Paste ascii-encoded text here."></textarea>
+      </div>
 
-    <div id="ascii">
-      ASCII table reference. (<a href="https://www.ascii-code.com/" target="_blank">full reference</a>)
-      <table id="ascii-table">
-        <tr>
-          <th>MSB3</th>
-          <th>Characters</th>
-        </tr>
-        <tr>
-          <td>000</td>
-          <td>&lt;Control Characters&gt;</td>
-        </tr>
-        <tr>
-          <td>001</td>
-          <td>&nbsp;!"#$%&'()*+,-./ 0123456789:;<=>?</td>
-        </tr>
-        <tr>
-          <td>010</td>
-          <td>@ABCDEFGHIJKLMNO PQRSTUVWXYZ[\]^_</td>
-        </tr>
-        <tr>
-          <td>011</td>
-          <td>`abcdefghijklmno pqrstuvwxyz{|}~.</td>
-        </tr>
-      </table>
-    </div>
-    <div id="result">
-      <p id="result-p"></p>
+      <div id="ascii-reference">
+        <h2>ASCII table reference.</h2>(<a href="https://www.ascii-code.com/" target="_blank">full reference</a>)
+        <table id="ascii-table">
+          <tr>
+            <th>MSB3</th>
+            <th>Characters</th>
+          </tr>
+          <tr>
+            <td>000</td>
+            <td class="ctrl">&lt;Control Characters&gt;</td>
+          </tr>
+          <tr>
+            <td>001</td>
+            <td class="num">&nbsp;!"#$%&amp;'()*+,-./ 0123456789:;<=>?</td>
+          </tr>
+          <tr>
+            <td>010</td>
+            <td class="upper">@ABCDEFGHIJKLMNO PQRSTUVWXYZ[\]^_</td>
+          </tr>
+          <tr>
+            <td>011</td>
+            <td class="lower">`abcdefghijklmno pqrstuvwxyz{|}~.</td>
+          </tr>
+          <!--tr>
+            <td>1**</td>
+            <td class="ext">&lt;Extended Characters&gt;</td>
+          </tr-->
+        </table>
+      </div>
+      <div id="result">
+        <h2>XORed text (ascii encoded, highlighted)</h2>
+        <p id="result-p">[blank]</p>
+      </div>
     </div>
   </body>
 
