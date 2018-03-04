@@ -2,44 +2,78 @@
 
 document.addEventListener("DOMContentLoaded", function(event){
 
-  // Globals for four textareas
-  var hex1 = document.getElementById("hex1")
-  var hex2 = document.getElementById("hex2")
-  var ascii1 = document.getElementById("ascii1")
-  var ascii2 = document.getElementById("ascii2")
+  // Globals for DOM input
+  var cts
+  var crib
+  var cribLocation = 0
+  var ctReference = 0
+  var resultElem = document.getElementById("result-p")
 
-  // Attach event listeners to both ciphertext boxes
-  hex1.addEventListener("input", ()=>update("hex", 1))
-  hex2.addEventListener("input", ()=>update("hex", 2))
-  ascii1.addEventListener("input", ()=>update("ascii", 1))
-  ascii2.addEventListener("input", ()=>update("ascii", 2))
+  // Scan and render once in case browser has stored input from last session
+  scan();
+  render();
+
+  // Attach event listeners
+  document.getElementById("cts") .addEventListener("input", ()=>{scan(); render()})
+  document.getElementById("crib").addEventListener("input", ()=>{scan(); render()})
+
+  document.getElementById("crib-left") .addEventListener("click", ()=>{cribLocation--; render()})
+  document.getElementById("crib-right").addEventListener("click", ()=>{cribLocation++; render()})
+  document.getElementById("ref-up")    .addEventListener("click", ()=>{updateRef(-1);  render()})
+  document.getElementById("ref-down")  .addEventListener("click", ()=>{updateRef(+1);  render()})
 
   /**
-   * Updates the textboxes whenever any of them changes and then
-   * displays the XORed text.
-   * @param enc Which encoding changed "ascii" or "hex"
-   * @param num Which of the inputs changed 1, or 2
+   * Reads input from the DOM and populates global variables
    */
-  function update(enc, num){
-    // Update whichever box is necessary
-    if (enc === "hex"){
-      var hexstr = document.getElementById("hex" + num).value
-      document.getElementById("ascii" + num).value = hex2ascii(hexstr)
+  function scan(){
+    cts  = document.getElementById("cts").value.split("\n").filter(x=>x!=="").map(hex2ascii)
+    crib = document.getElementById("crib").value
+  }
+
+  /**
+   * Updates the ctReference. And changes the crib to match the new reference.
+   * @param delta How much to chage the ctReference by.
+   */
+  function updateRef(delta){
+    var oldRef = ctReference
+
+    // Do the bounded reference update.
+    ctReference += delta
+    if (ctReference < 0){
+      ctReference = 0
     }
-    else{
-      var asciistr = document.getElementById("ascii" + num).value
-      document.getElementById("hex" + num).value = ascii2hex(asciistr)
+    if (ctReference >= cts.length){
+      ctReference = cts.length - 1
     }
 
-    var XORed = xorString(ascii1.value, ascii2.value)
-    var final = ""
+    // Change the crib
+    var newCt = cts[ctReference].slice(cribLocation, cribLocation + crib.length)
+    var oldCt = cts[oldRef]     .slice(cribLocation, cribLocation + crib.length)
+    var newCrib = xorString(xorString(newCt, oldCt), crib)
 
-    for(var i = 0; i < XORed.length; i++){
-      final += decorate(XORed.charAt(i), true)
-        final += decorate(XORed.charAt(++i), false)
+    document.getElementById("crib").value = newCrib
+    crib = newCrib
+  }
+
+  /**
+   * Updates the UI when the user interacts with the DOM.
+   */
+  function render(enc, num){
+
+    // Loop through each ct and xor with the reference
+    var result = ""
+    for (var ct of cts){
+      var XORed = xorString(ct, cts[ctReference])
+      XORed = xorCrib(XORed, crib, cribLocation)
+
+      for(var i = 0; i < XORed.length; i++){
+        // Highlight iff i falls within the crib location
+        result += decorate(XORed.charAt(i), i >= cribLocation && i < cribLocation + crib.length)
+      }
+
+      result += "<br />"
     }
-
-    document.getElementById("result-p").innerHTML = final
+  resultElem.innerHTML = result
   }
 
   /**
@@ -83,25 +117,21 @@ document.addEventListener("DOMContentLoaded", function(event){
 
   /**
    * Computes the bitwise XOR of the two strings given. If the strings are of unequal length, the
-   * shorter string is right-padded with nulls. That is, the end of the longer string remains
-   * unchanged.
-   * @param s1 The first string to be XORed
-   * @param s2 The second string to be XORed
+   * s1 will never be padded, but s2 will be padded with nulls to match s1's length
+   * @param s1 The first string to be XORed (never padded)
+   * @param s2 The second string to be XORed (may be padded)
    * @return The ascii encoded XOR of the two strings
    */
   function xorString(s1, s2){
-    // Determine which string is shorter
-    var shorter = s1.length < s2.length ? s1 : s2
-    var longer  = s1.length < s2.length ? s2 : s1
 
     // Iterate XORing char-wise
     var answer = ""
-    for (var i = 0; i < longer.length; i++){
-      if (i < shorter.length){
+    for (var i = 0; i < s1.length; i++){
+      if (i < s2.length){
         answer += String.fromCharCode(s1.charCodeAt(i) ^ s2.charCodeAt(i))
       }
       else{
-        answer += longer.charAt(i)
+        answer += s1.charAt(i)
       }
     }
     return answer
@@ -138,6 +168,9 @@ document.addEventListener("DOMContentLoaded", function(event){
    * @return A regular ascii string
    */
   function hex2ascii(hex){
+    if (hex.length % 2 != 0){
+      console.warn("hex2ascii: Hex string starting with " + hex.slice(0, 6) + "is not an even number of characters")
+    }
     var answer = ""
     for (var i = 0; i < hex.length; i += 2){
       answer += String.fromCharCode(parseInt(hex.slice(i, i+2), 16))

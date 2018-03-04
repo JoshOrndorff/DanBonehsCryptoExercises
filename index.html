@@ -10,26 +10,18 @@
 
   <body>
     <div id="grid">
-      <div class="hex">
-        <h2>First hex text</h2>
-        <textarea id="hex1" cols="80" rows="20" placeholder="Paste hex-encoded text here."></textarea>
-      </div>
-      <div class="ascii">
-        <h2>First ascii text</h2>
-        <textarea id="ascii1" cols="80" rows="20" placeholder="Paste ascii-encoded text here."></textarea>
+      <div id="cts-div">
+        <p class="title">Enter Ciphertexts</p>
+        <p>Cipher texts should be hex encoded. One ciphertext per line (blank lines are ignored).
+          <a href="example-cipher-texts.txt">See example ciphers</a>
+        </p>
+
+        <textarea id="cts" placeholder="Paste hex-encoded ciphertexts here."></textarea>
       </div>
 
-      <div class="hex">
-        <h2>Second hex text</h2>
-        <textarea id="hex2" cols="80" rows="20" placeholder="Paste hex-encoded text here."></textarea>
-      </div>
-      <div class="ascii">
-        <h2>Second ascii text</h2>
-        <textarea id="ascii2" cols="80" rows="20" placeholder="Paste ascii-encoded text here."></textarea>
-      </div>
-
-      <div id="ascii-reference">
-        <h2>ASCII table reference.</h2>(<a href="https://www.ascii-code.com/" target="_blank">full reference</a>)
+      <div id="ascii-div">
+        <p class="title">ASCII table reference</p>
+        <p>(<a href="https://www.ascii-code.com/" target="_blank">full reference</a>)</p>
         <table id="ascii-table">
           <tr>
             <th>MSB3</th>
@@ -37,29 +29,42 @@
           </tr>
           <tr>
             <td>000</td>
-            <td class="ctrl">&lt;Control Characters&gt;</td>
+            <td class="ctrl">.......Control Characters.......</td>
           </tr>
           <tr>
             <td>001</td>
-            <td class="num">&nbsp;!"#$%&amp;'()*+,-./ 0123456789:;<=>?</td>
+            <td class="num">&nbsp;!"#$%&amp;'()*+,-./0123456789:;<=>?</td>
           </tr>
           <tr>
             <td>010</td>
-            <td class="upper">@ABCDEFGHIJKLMNO PQRSTUVWXYZ[\]^_</td>
+            <td class="upper">@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_</td>
           </tr>
           <tr>
             <td>011</td>
-            <td class="lower">`abcdefghijklmno pqrstuvwxyz{|}~.</td>
+            <td class="lower">`abcdefghijklmnopqrstuvwxyz{|}~.</td>
           </tr>
           <tr>
             <td>1**</td>
-            <td class="ext">&lt;Extended Characters&gt;</td>
+            <td class="ext">.......Extended Characters......</td>
           </tr>
         </table>
       </div>
-      <div id="result">
-        <h2>XORed text (ascii encoded, highlighted)</h2>
-        <p id="result-p">[blank]</p>
+      <div id="crib-div">
+        <p class="title">Choose a crib and reference</p>
+        <p>Enter your crib and drag it around with the buttons. (unsure? try " the ")</p>
+        <input id="crib" type="text" value=" the "/>
+        <div id="crib-ctrls">
+          <div id="crib-left"  class="button">&lt;</div>
+          <div id="crib-right" class="button">&gt;</div>
+          <div id="ref-up"   class="button">/\</div>
+          <div id="ref-down" class="button">\/</div>
+        </div>
+      </div>
+      <div id="result-div">
+        <p class="title">Observe the results</p>
+        <p>Look for highlighted sections that could be English text.</p>
+        <!--p id="crib-p"></p-->
+        <p id="result-p"></p>
       </div>
     </div>
   </body>
