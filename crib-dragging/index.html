@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8"
+          http-equiv="Content-Type" />
+    <title>Crib Dragging</title>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script type="text/javascript" src="crypto.js"></script>
+  </head>
+
+  <body>
+    <div id="grid">
+      <div id="cts-div">
+        <p class="title">Enter Ciphertexts</p>
+        <p>Cipher texts should be hex encoded. One ciphertext per line (blank lines are ignored).
+          <a href="example-cipher-texts.txt">See example ciphers</a>
+        </p>
+
+        <textarea id="cts" placeholder="Paste hex-encoded ciphertexts here."></textarea>
+      </div>
+
+      <div id="ascii-div">
+        <p class="title">ASCII table reference</p>
+        <p>(<a href="https://www.ascii-code.com/" target="_blank">full reference</a>)</p>
+        <table id="ascii-table">
+          <tr>
+            <th>MSB3</th>
+            <th>Characters</th>
+          </tr>
+          <tr>
+            <td>000</td>
+            <td class="ctrl">.......Control Characters.......</td>
+          </tr>
+          <tr>
+            <td>001</td>
+            <td class="num">&nbsp;!"#$%&amp;'()*+,-./0123456789:;<=>?</td>
+          </tr>
+          <tr>
+            <td>010</td>
+            <td class="upper">@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_</td>
+          </tr>
+          <tr>
+            <td>011</td>
+            <td class="lower">`abcdefghijklmnopqrstuvwxyz{|}~.</td>
+          </tr>
+          <tr>
+            <td>1**</td>
+            <td class="ext">.......Extended Characters......</td>
+          </tr>
+        </table>
+      </div>
+      <div id="crib-div">
+        <p class="title">Choose a crib and reference</p>
+        <p>Enter your crib and drag it around with the buttons. (unsure? try " the ")</p>
+        <input id="crib" type="text" value=" the "/>
+        <div id="crib-ctrls">
+          <div id="crib-left"  class="button">&lt;</div>
+          <div id="crib-right" class="button">&gt;</div>
+          <div id="ref-up"   class="button">/\</div>
+          <div id="ref-down" class="button">\/</div>
+        </div>
+      </div>
+      <div id="result-div">
+        <p class="title">Observe the results</p>
+        <p>Look for highlighted sections that could be English text.</p>
+        <!--p id="crib-p"></p-->
+        <p id="result-p"></p>
+      </div>
+    </div>
+  </body>
+
+</html>
