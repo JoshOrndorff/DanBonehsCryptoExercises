@@ -32,7 +32,19 @@
     </div>
     <h1>CTR Mode</h1>
     <div id="CTR" class="grid">
-      TODO
+      <div class="pt">
+        <textarea id="ctr-pt" placeholder="Plain Text (ASCII encoded)"></textarea>
+      </div>
+      <div class="key">
+        <button id="ctr-encrypt">Encrypt -&gt;</button>
+        <br />
+        <input id="ctr-key" type="text" placeholder="Key (HEX encoded)"/>
+        <br />
+        <button id="ctr-decrypt">&lt;- Decrypt</button>
+      </div>
+      <div class="ct">
+        <textarea id="ctr-ct" placeholder="Cipher Text (HEX encoded)"></textarea>
+      </div>
     </div>
   </body>
 

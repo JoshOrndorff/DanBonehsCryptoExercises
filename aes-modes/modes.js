@@ -1,3 +1,9 @@
+/*
+
+CTR Mode is not working correctly. My suspicion is that the pad is not being generated correctly. Maybe a better approach would be to use an actual int as IV (gotta figure out how to get a random one) and then make it into bytes by toString-ing it to a hex string and then using aesjs.utils.hex.toBytes.
+
+*/
+
 "use strict";
 
 document.addEventListener("DOMContentLoaded", event => {
@@ -7,19 +13,16 @@ document.addEventListener("DOMContentLoaded", event => {
 
   document.getElementById("cbc-encrypt").addEventListener("click", cbcEncrypt)
   document.getElementById("cbc-decrypt").addEventListener("click", cbcDecrypt)
-  //document.getElementById("ctr-encrypt").addEventListener("click", ctrEncrypt)
-  //document.getElementById("ctr-decrypt").addEventListener("click", ctrDecrypt)
+  document.getElementById("ctr-encrypt").addEventListener("click", ctrEncrypt)
+  document.getElementById("ctr-decrypt").addEventListener("click", ctrDecrypt)
 
   /**
    * Grabs plaintext and key from DOM, performs encryption in CBC mode, and writes
    * ciphertext back to DOM.
    */
   function cbcEncrypt(){
-    // Choose IV and initialize ctBlocks with it
-    // (https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto)
-    var iv = new Uint8Array(bs)
-    window.crypto.getRandomValues(iv)
-    var ctBlocks = [iv]
+    // Initialize ctBlocks with a random initialization vector
+    var ctBlocks = [getIV()]
 
     // Grab pt and key from DOM
     var pt = aesjs.utils.utf8.toBytes(document.getElementById("cbc-pt").value)
@@ -68,11 +71,73 @@ document.addEventListener("DOMContentLoaded", event => {
   }
 
   function ctrEncrypt(){
-    //TODO
+    // Generate a random initialization vector and copy it into ct
+    var iv = getIV()
+    var ct = aesjs.utils.utf8.fromBytes(iv)
+
+    // Grab pt and key from DOM
+    var pt = document.getElementById("ctr-pt").value
+    var key = aesjs.utils.hex.toBytes(document.getElementById("ctr-key").value)
+
+    // Generate pad at least as long as plaintext
+    var aes = new aesjs.AES(key)
+    var pad = ""
+    while(pad.length < pt.length){
+      incBytes(iv)
+      pad += aesjs.utils.utf8.fromBytes(aes.encrypt(iv))
+    }
+
+    // Encrypt by XOR
+    ct += xorString(pt, pad)
+
+    // Write ciphertext to DOM
+    document.getElementById("ctr-ct").value = ascii2hex(ct)
   }
 
   function ctrDecrypt(){
-    //TODO
+    // Grab ctr, ct, and key from DOM
+    var key = aesjs.utils.hex.toBytes(document.getElementById("ctr-key").value)
+    var ct = document.getElementById("ctr-ct").value
+    var ctr = aesjs.utils.hex.toBytes(ct.slice(0, bs * 2)) //2 hex chars per byte
+    ct = hex2ascii(ct.slice(32))
+
+    // Generate pad at least as long as plaintext
+    var aes = new aesjs.AES(key)
+    var pad = ""
+    while(pad.length < ct.length){
+      incBytes(ctr)
+      pad += aesjs.utils.utf8.fromBytes(aes.encrypt(ctr))
+    }
+
+    // Decrypt by XOR and write to DOM
+    var pt = xorString(ct, pad)
+    document.getElementById("ctr-pt").value = pt
+  }
+
+  /**
+   * Increments a Byte array as if it were a single number.
+   * @param bytes The byte array to be incremented
+   */
+  function incBytes(bytes){
+    for (var i = bytes.length - 1; i > 0; i--){
+      bytes[i]++
+      // If no overflow, we're done. But if overflow, go again to handle carry
+      if (bytes[i] !== 0){
+        break
+      }
+    }
+  }
+
+  /**
+   * Generates random initialization vector of proper block size using OS's random features.
+   * (See the global bs variable; 16 bytes for AES)
+   * https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto
+   * @return The random vector
+   */
+  function getIV(){
+    var iv = new Uint8Array(bs)
+    window.crypto.getRandomValues(iv)
+    return iv
   }
 
   /**
