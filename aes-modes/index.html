@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8"
+          http-equiv="Content-Type" />
+    <title>AES Modes</title>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script type="text/javascript" src="https://cdn.rawgit.com/ricmoo/aes-js/e27b99df/index.js"></script>
+    <script type="text/javascript" src="../helpers.js"></script>
+    <script type="text/javascript" src="modes.js"></script>
+  </head>
+
+  <body>
+    <h1>About</h1>
+    <p>This project implements AES in both CBC and CTR modes. It only implements the modes, and uses <a href="https://github.com/ricmoo/aes-js">aes-js</a> for the underlying AES cipher. When encrypting, the 16-byte initialization vector is chosen randomly ( from window.crypto.getRandomValues()) and prepended to the ciphertext. When decrypting, the first 16 bytes are assumed to be the initialization vector.</p>
+    <p>In CBC mode, padding is performed according to <a href="https://tools.ietf.org/html/rfc1423#section-1.1">RFC 1423</a>.</p>
+    <h1>CBC Mode</h1>
+    <div id="CBC" class="grid">
+      <div class="pt">
+        <textarea id="cbc-pt" placeholder="Plain Text (ASCII encoded)"></textarea>
+      </div>
+      <div class="key">
+        <button id="cbc-encrypt">Encrypt -&gt;</button>
+        <br />
+        <input id="cbc-key" type="text" placeholder="Key (HEX encoded)"/>
+        <br />
+        <button id="cbc-decrypt">&lt;- Decrypt</button>
+      </div>
+      <div class="ct">
+        <textarea id="cbc-ct" placeholder="Cipher Text (HEX encoded)"></textarea>
+      </div>
+    </div>
+    <h1>CTR Mode</h1>
+    <div id="CTR" class="grid">
+      TODO
+    </div>
+  </body>
+
+</html>

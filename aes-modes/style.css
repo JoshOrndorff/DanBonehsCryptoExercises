@@ -1,0 +1,24 @@
+/* Grid layout */
+.grid{
+  max-width: 100%;
+  display:grid;
+  grid-template-columns: 3fr 2fr 3fr;
+  grid-gap: 1em;
+}
+
+.key{
+  text-align: center;
+}
+
+.ct{
+  text-align: right;
+}
+
+input {
+  width: 100%;
+}
+
+textarea{
+  width: calc(100% - 1em);
+  height: 100%;
+}
