@@ -1,8 +1,3 @@
-/*
-
-CTR Mode is not working correctly. My suspicion is that the pad is not being generated correctly. Maybe a better approach would be to use an actual int as IV (gotta figure out how to get a random one) and then make it into bytes by toString-ing it to a hex string and then using aesjs.utils.hex.toBytes.
-
-*/
 
 "use strict";
 
@@ -73,25 +68,33 @@ document.addEventListener("DOMContentLoaded", event => {
   function ctrEncrypt(){
     // Generate a random initialization vector and copy it into ct
     var iv = getIV()
-    var ct = aesjs.utils.utf8.fromBytes(iv)
-
-    // Grab pt and key from DOM
-    var pt = document.getElementById("ctr-pt").value
-    var key = aesjs.utils.hex.toBytes(document.getElementById("ctr-key").value)
-
-    // Generate pad at least as long as plaintext
-    var aes = new aesjs.AES(key)
-    var pad = ""
-    while(pad.length < pt.length){
-      incBytes(iv)
-      pad += aesjs.utils.utf8.fromBytes(aes.encrypt(iv))
+    var ct = []
+    for(var ivByte of iv){
+      ct.push(ivByte)
     }
 
+    // Grab pt and key from DOM
+    var pt = aesjs.utils.utf8.toBytes(document.getElementById("ctr-pt").value)
+    pt = blockify(pt, false) // don't pad in CTR mode
+    var key = aesjs.utils.hex.toBytes(document.getElementById("ctr-key").value)
+
+    var aes = new aesjs.AES(key)
+
     // Encrypt by XOR
-    ct += xorString(pt, pad)
+    for(var i = 0; i < pt.length; i++){
+      var padBlock = aes.encrypt(iv)
+      if(padBlock.length > pt[i].length){
+        padBlock = padBlock.slice(0, pt[i].length)
+      }
+      var ctBlock = xorBlocks(pt[i], padBlock)
+      incBytes(iv)
+      for(var j = 0; j < padBlock.length; j++){
+        ct.push(ctBlock[j])
+      }
+    }
 
     // Write ciphertext to DOM
-    document.getElementById("ctr-ct").value = ascii2hex(ct)
+    document.getElementById("ctr-ct").value = aesjs.utils.hex.fromBytes(ct)
   }
 
   function ctrDecrypt(){
@@ -99,19 +102,26 @@ document.addEventListener("DOMContentLoaded", event => {
     var key = aesjs.utils.hex.toBytes(document.getElementById("ctr-key").value)
     var ct = document.getElementById("ctr-ct").value
     var ctr = aesjs.utils.hex.toBytes(ct.slice(0, bs * 2)) //2 hex chars per byte
-    ct = hex2ascii(ct.slice(32))
+    ct = blockify(aesjs.utils.hex.toBytes(ct.slice(bs * 2)), false) // don't pad in CTR mode
 
-    // Generate pad at least as long as plaintext
     var aes = new aesjs.AES(key)
-    var pad = ""
-    while(pad.length < ct.length){
+
+    // Decrypt by XOR
+    var pt = []
+    for(var i = 0; i < ct.length; i++){
+      var padBlock = aes.encrypt(ctr)
+      if (padBlock.length > ct[i].length){
+        padBlock = padBlock.slice(0, ct[i].length)
+      }
+      var ptBlock = xorBlocks(ct[i], padBlock)
       incBytes(ctr)
-      pad += aesjs.utils.utf8.fromBytes(aes.encrypt(ctr))
+      for(var j = 0; j < padBlock.length; j++){
+        pt.push(ptBlock[j])
+      }
     }
 
-    // Decrypt by XOR and write to DOM
-    var pt = xorString(ct, pad)
-    document.getElementById("ctr-pt").value = pt
+    // Write to DOM
+    document.getElementById("ctr-pt").value = aesjs.utils.utf8.fromBytes(pt)
   }
 
   /**
@@ -120,9 +130,12 @@ document.addEventListener("DOMContentLoaded", event => {
    */
   function incBytes(bytes){
     for (var i = bytes.length - 1; i > 0; i--){
-      bytes[i]++
       // If no overflow, we're done. But if overflow, go again to handle carry
-      if (bytes[i] !== 0){
+      if (bytes[i] === 256){
+        bytes[i] = 0
+      }
+      else {
+        bytes[i]++
         break
       }
     }
@@ -141,19 +154,19 @@ document.addEventListener("DOMContentLoaded", event => {
   }
 
   /**
-   * XORs two blocks. A block is an Array-like of size bs.
+   * XORs two blocks. A block is an Array-like (usually of size bs).
    * (See the global bs variable; 16 bytes for AES)
    * @param a The first block
    * @param b The second block
    * @return The results
    */
   function xorBlocks(a, b){
-    if (a.length !== bs || b.length !== bs){
-      console.warn("Attempting to XOR blocks of incorrect blocksize.")
+    if (a.length !== b.length){
+      console.warn("Attempting to XOR blocks of unequal blocksize.")
     }
 
     var result = []
-    for (var i = 0; i < bs; i++){
+    for (var i = 0; i < a.length; i++){
       result[i] = a[i] ^ b[i]
     }
 
