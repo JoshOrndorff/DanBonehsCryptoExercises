@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8"
+          http-equiv="Content-Type" />
+    <title>Chain hashing</title>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script type="text/javascript" src="chainhash.js"></script>
+    <script type="text/javascript" src="sha256.js"></script>
+    <!--script type="text/javascript" src="https://raw.githubusercontent.com/emn178/js-sha256/master/build/sha256.js"></script-->
+  </head>
+
+  <body>
+    <h1>About</h1>
+    <p>This project chain hashes a large file one block at a time so it can be incrementally verified as it is downloaded.</p>
+    <h1>Choose a file</h1>
+    Select a file to chain hash.
+    <input type="file" id="file" />
+    <h1>First block's hash</h1>
+    <input type="text" id="hash" size="70"/>
+  </body>
+
+</html>
