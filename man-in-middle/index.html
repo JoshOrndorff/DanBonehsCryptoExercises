@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8"
+          http-equiv="Content-Type" />
+    <title>Man in the middle</title>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script type="text/javascript" src="middle.js"></script>
+    <script type="text/javascript" src="../MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+  </head>
+
+  <body>
+    <h1>About</h1>
+    <p>This project solves the discrete log problem \( h=g^x \mod p \). Rather than brute forcing, it splits x into two components and runs a meet-in-the-middle attack. \( \frac{h}{g^{x_1}}=(g^B)^{x_0} \) We don't verify that p is indeed prime.</p>
+
+    <h1>Your Inputs</h1>
+    <label for="p">p:</label>
+    <textarea id="p" placeholder="Some prime, p"></textarea>
+    <label for="g">g:</label>
+    <textarea id="g" placeholder="g"></textarea>
+    <label for="h">h:</label>
+    <textarea id="h" placeholder="h"></textarea>
+
+
+    <h1>Your Outputs</h1>
+    <label for="x0">x0:</label>
+    <textarea id="x0" disabled></textarea>
+    <label for="x1">x1:</label>
+    <textarea id="x1" disabled></textarea>
+    <label for="x">x:</label>
+    <textarea id="x" disabled></textarea>
+  </body>
+
+</html>
