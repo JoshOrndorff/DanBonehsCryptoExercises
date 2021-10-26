@@ -1,0 +1,52 @@
+Topics to review
+----------------
+PRP and PRF
+Birthday paradox
+
+
+1. ECC is only for accidental transmission errors, so it needs to be applied to what is being transmitted, which is the encrypted code. Encrypt first, the ecc.
+
+2. Z = 0 iff X = Y. X is uniform, so the probability that it is ANY particular n-bit string (eg. whatever Y is) is 1/2^n.
+
+3. Does "symantic cipher" mean "semantically secure cipher"? I think perfectly secure mean with one query.
+
+    E2, D2 can be perfectly secure (and therefore also symantically secure) because it could be the one-time pad
+    E1, D1 cannot survive a CPA because it is deterministic.
+    E1, D1 cannot be perfectly secure because the key is shorter than the message. It can be one-time symantically secure because we could use a PRG to make a longer key, but that isn't the option given.
+
+4. CBC definitely needs a PRP because the output needs to be the same length as the next chunk of input to be XORed. CTR mode just generates a pad to be used for XORing the plaintext, so it can be a PRF.
+
+**5. G(k)[0]+m is not indistinguishible from a random function because here flipping every bit of the message, encrypting, and flipping every bit of the ciphertext is the same as just encrypting the message. This would not be true for a random function.
+    I think M = {0, 1} is it. A different message gives a totally different output.
+    m + k is Wrong for the same reason as the first one.
+    G(m)[0]+k is wrong for the same reason as the first one, and also, it is just weird.
+
+6. I hate questions like this. How high of probability? 16 buts will certainly repeat. 32 bits has only a single way to not repeat. The others are both reasonably possible not to repeat.
+
+Isaac says birthday paradox!!!!
+
+when you draw sqrt(n) items, probability of a dupe is 1/2. That's not very low.
+
+7. 2^32 messages, 2^32 nonces
+
+8. I don't remember MACs being PRFs.
+   Definitely the adversary can learn something about m from the MAC. That's why we don't mac and encrypt
+   Probably we could find MAC collisions? They aren't long right? And a hash function is different than a MAC, at least shared-secret-wise.
+   You should definitely not be able to sign a second message given only the signature of the first. You need the shared secret, k.
+
+9. Seems pretty clear that H(m0) != H(m1)
+
+10. Finding the key, k, from a message, ciphertext pair is difficult, but doesn't have anything to do specifically with AUTHENTICATED encryption...
+    It's easy to create a message that decrypts to bottom. Most do.
+    Attacker should not be able to encrypt arbitrary messages. That would be an existential forgery.
+    Given k the attacker can of course greate encryptions.
+    Why would attacker want to find a second message key pair with the same encryption
+
+11. Yep, that's how ElGamal works.
+    RSA is trapdoor, not DH.
+    The modulus is what makes it a Discrete log problem.
+    Eavesdropping only. Subject to MiTM.
+
+12. Yi = Xi^b = G^(ab), so multiply that exponent by a inverse (1/a)
+
+13. phi(p) = p - 1
